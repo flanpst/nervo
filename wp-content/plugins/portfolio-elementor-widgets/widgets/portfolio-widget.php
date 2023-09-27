@@ -151,20 +151,6 @@ class Elementor_Custom_Portfolio_Widget extends Base_Widget {
 			]
 		);
 
-		$this->add_control(
-			'masonry',
-			[
-				'label' => esc_html__( 'Masonry', 'elementor-pro' ),
-				'type' => Controls_Manager::SWITCHER,
-				'label_off' => esc_html__( 'Off', 'elementor-pro' ),
-				'label_on' => esc_html__( 'On', 'elementor-pro' ),
-				'condition' => [
-					'columns!' => '1',
-				],
-				'render_type' => 'ui',
-				'frontend_available' => true,
-			]
-		);
 
 		$this->add_control(
 			'item_ratio',
@@ -185,9 +171,6 @@ class Elementor_Custom_Portfolio_Widget extends Base_Widget {
 					'{{WRAPPER}} .elementor-post__thumbnail__link' => 'padding-bottom: calc( {{SIZE}} * 100% )',
 					'{{WRAPPER}}:after' => 'content: "{{SIZE}}"; position: absolute; color: transparent;',
 				],
-				'condition' => [
-					'masonry' => '',
-				],
 				'frontend_available' => true,
 			]
 		);
@@ -196,6 +179,17 @@ class Elementor_Custom_Portfolio_Widget extends Base_Widget {
 			'show_title',
 			[
 				'label' => esc_html__( 'Show Title', 'elementor-pro' ),
+				'type' => Controls_Manager::SWITCHER,
+				'default' => 'yes',
+				'label_off' => esc_html__( 'Off', 'elementor-pro' ),
+				'label_on' => esc_html__( 'On', 'elementor-pro' ),
+			]
+		);
+
+		$this->add_control(
+			'show_client',
+			[
+				'label' => esc_html__( 'Show Client', 'elementor-pro' ),
 				'type' => Controls_Manager::SWITCHER,
 				'default' => 'yes',
 				'label_off' => esc_html__( 'Off', 'elementor-pro' ),
@@ -395,6 +389,21 @@ class Elementor_Custom_Portfolio_Widget extends Base_Widget {
 				],
 				'condition' => [
 					'show_title' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'color_client',
+			[
+				'label' => esc_html__( 'Color Client', 'elementor-pro' ),
+				'separator' => 'before',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} a .elementor-portfolio-item__client' => 'color: {{VALUE}};',
+				],
+				'condition' => [
+					'show_client' => 'yes',
 				],
 			]
 		);
@@ -630,15 +639,25 @@ class Elementor_Custom_Portfolio_Widget extends Base_Widget {
 		}
 
 		$tag = $this->get_settings( 'title_tag' );
-		$post_id = get_the_ID();
-    	$client = get_post_meta( $post_id, 'client', true );
 		?>
 		<<?php Utils::print_validated_html_tag( $tag ); ?> class="elementor-portfolio-item__title">
 		<?php the_title(); ?>
+		</<?php Utils::print_validated_html_tag( $tag ); ?>>
+		<?php
+	}
+
+	protected function render_client() {
+
+		if ( ! $this->get_settings( 'show_client' ) ) {
+			return;
+		}
+
+		$post_id = get_the_ID();
+    	$client = get_post_meta( $post_id, 'client', true );
+		?>
 		<?php if ( $client ) : ?>
             <span class="elementor-portfolio-item__client"><?php echo esc_html( $client ); ?></span>
         <?php endif; ?>
-		</<?php Utils::print_validated_html_tag( $tag ); ?>>
 		<?php
 	}
 
@@ -724,6 +743,7 @@ class Elementor_Custom_Portfolio_Widget extends Base_Widget {
 		$this->render_thumbnail();
 		$this->render_overlay_header();
 		$this->render_title();
+		$this->render_client();
 		// $this->render_categories_names();
 		$this->render_overlay_footer();
 		$this->render_post_footer();

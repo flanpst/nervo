@@ -594,14 +594,9 @@ class Portfolio extends Base_Widget {
 		}
 
 		$tag = $this->get_settings( 'title_tag' );
-		$post_id = get_the_ID();
-    	$client = get_post_meta( $post_id, 'client', true );
 		?>
 		<<?php Utils::print_validated_html_tag( $tag ); ?> class="elementor-portfolio-item__title">
 		<?php the_title(); ?>
-		<?php if ( $client ) : ?>
-            <span class="elementor-portfolio-item__client"><?php echo esc_html( $client ); ?></span>
-        <?php endif; ?>
 		</<?php Utils::print_validated_html_tag( $tag ); ?>>
 		<?php
 	}
