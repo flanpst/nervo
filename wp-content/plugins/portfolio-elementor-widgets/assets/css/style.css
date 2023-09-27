@@ -1,0 +1,4 @@
+.elementor-posts-container .elementor-post__thumbnail {
+    overflow: hidden;
+    position: absolute;
+}

@@ -1,5 +1,5 @@
 <?php
-namespace ElementorPro\Modules\Posts\Widgets;
+
 
 use Elementor\Core\Kits\Documents\Tabs\Global_Colors;
 use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
@@ -11,14 +11,19 @@ use ElementorPro\Modules\QueryControl\Module as Module_Query;
 use ElementorPro\Modules\QueryControl\Controls\Group_Control_Related;
 use Elementor\Controls_Manager;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+
+if( ! defined( 'ABSPATH' ) ){
+    exit;
 }
 
 /**
- * Class Portfolio
+ * Elementor oEmbed Widget.
+ *
+ * Elementor widget that inserts an embbedable content into the page, from any given URL.
+ *
+ * @since 1.0.0
  */
-class Portfolio extends Base_Widget {
+class Elementor_Custom_Portfolio_Widget extends Base_Widget {
 
 	/**
 	 * @var \WP_Query
@@ -27,16 +32,47 @@ class Portfolio extends Base_Widget {
 
 	protected $_has_template_content = false;
 
+	/**
+	 * Get widget name.
+	 *
+	 * Retrieve oEmbed widget name.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return string Widget name.
+	 */
 	public function get_name() {
-		return 'portfolio';
+		return 'custom portfolio';
 	}
 
+	/**
+	 * Get widget title.
+	 *
+	 * Retrieve oEmbed widget title.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return string Widget title.
+	 */
 	public function get_title() {
-		return esc_html__( 'Portfolio', 'elementor-pro' );
+		return esc_html__( 'Portfolio Nervo', 'elementor-portfolio-widget' );
 	}
 
+	/**
+	 * Get widget icon.
+	 *
+	 * Retrieve oEmbed widget icon.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return string Widget icon.
+	 */
 	public function get_icon() {
 		return 'eicon-gallery-grid';
+	}
+
+	public function get_style_depends() {
+		return [ 'style-portfolio-nervo' ];
 	}
 
 	public function get_keywords() {
@@ -698,4 +734,5 @@ class Portfolio extends Base_Widget {
 	public function get_group_name() {
 		return 'posts';
 	}
+
 }

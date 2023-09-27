@@ -18,7 +18,7 @@ class Notice_Bar extends Base_Object {
 		}
 
 		return [
-			'muted_period' => 14,
+			'muted_period' => 365,
 			'option_key' => '_elementor_editor_upgrade_notice_dismissed',
 			'message' => esc_html__( 'Unleash the full power of Elementor\'s features and web creation tools.', 'elementor' ),
 			'action_title' => esc_html__( 'Upgrade Now', 'elementor' ),
