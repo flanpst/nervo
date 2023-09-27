@@ -34,6 +34,8 @@ function register_portfolio_widget( $widgets_manager ) {
 add_action( 'elementor/widgets/register', 'register_portfolio_widget' );
 
 function register_widget_styles() {
-	wp_register_style( 'style-portfolio-nervo', plugins_url( 'assets/css/style.css', __FILE__ ) );
+	wp_register_style( 'style-portfolio-nervo', plugin_dir_url( __FILE__ ) . 'assets/css/style.css');
 }
-add_action( 'wp_enqueue_scripts', 'register_widget_styles' );
+
+add_action( 'elementor/frontend/before_enqueue_styles', 'register_widget_styles' );
+add_action( 'elementor/frontend/after_enqueue_styles', 'register_widget_styles' );

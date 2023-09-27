@@ -42,7 +42,11 @@ class Elementor_Custom_Portfolio_Widget extends Base_Widget {
 	 * @return string Widget name.
 	 */
 	public function get_name() {
-		return 'custom portfolio';
+		return 'portfolio-nervo';
+	}
+
+	public function get_style_depends() {
+		return [ 'style-portfolio-nervo' ];
 	}
 
 	/**
@@ -69,10 +73,6 @@ class Elementor_Custom_Portfolio_Widget extends Base_Widget {
 	 */
 	public function get_icon() {
 		return 'eicon-gallery-grid';
-	}
-
-	public function get_style_depends() {
-		return [ 'style-portfolio-nervo' ];
 	}
 
 	public function get_keywords() {
