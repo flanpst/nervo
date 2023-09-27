@@ -422,7 +422,24 @@ class Elementor_Custom_Portfolio_Widget extends Base_Widget {
 			]
 		);
 
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'label' => esc_html__( 'Typography Client', 'elementor-pro' ),
+				'name' => 'typography_client',
+				'global' => [
+					'default' => Global_Typography::TYPOGRAPHY_PRIMARY,
+				],
+				'selector' => '{{WRAPPER}} .elementor-portfolio-item__client',
+				'condition' => [
+					'show_title' => 'yes',
+				],
+			]
+		);
+
 		$this->end_controls_section();
+
+		
 
 		$this->start_controls_section(
 			'section_design_filter',
