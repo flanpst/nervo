@@ -1,0 +1,9 @@
+.elementor-posts-container .elementor-post__thumbnail {
+    overflow: hidden;
+    position: absolute;
+}
+
+.elementor-portfolio-item__client{
+    font-size: 16px;
+    word-break: break-word;
+}

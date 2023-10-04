@@ -1,0 +1,33 @@
+.elementor-post-navigation .elementor-post-navigation__link a{
+    display: block;
+}
+
+.elementor-post-navigation .post-navigation__arrow-wrapper.post-navigation__arrow-next{
+    float: right;
+    color: #fff;
+}
+
+.elementor-post-navigation .post-navigation__arrow-wrapper.post-navigation__arrow-prev{
+    float: left;
+    color: #fff;
+}
+
+.elementor-widget-navigation span.post-navigation__prev--title, .elementor-widget-navigation span.post-navigation__next--title{
+    color: #fff
+}
+
+.elementor-widget-navigation span.post-navigation__next--label{
+    color: #fff;
+}
+
+.elementor-widget-navigation span.post-navigation__prev--label, .elementor-widget-navigation span.post-navigation__next--label{
+    color: #fff;
+}
+
+.elementor-post-navigation__link__prev-client{
+    color: #fff
+}
+
+.elementor-post-navigation__link__next-client{
+    color: #fff
+}
