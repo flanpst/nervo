@@ -102,77 +102,19 @@ function enqueue_custom_script() {
 add_action('wp_enqueue_scripts', 'enqueue_custom_script');
 
 
-function filter_portfolio() {
-    $client = $_POST['client'];
-    $year = $_POST['year'];
-    $type = $_POST['type'];
+// Adiciona um hook para filtrar o widget de portfólio do Elementor
+add_action( 'elementor/query/portfolio', function( $query ) {
+    // Verifique se a consulta Elementor está ativa
+    if ( function_exists( 'elementor' ) ) {
+        // Adicione seus filtros à consulta
+        // Por exemplo, se você quer filtrar por um campo personalizado chamado 'custom_field_name'
+        $filters = $_POST['filters']; // Certifique-se de validar e limpar os dados
 
-    // Verifica se os valores dos filtros não são vazios
-    if (empty($client)) {
-        die('O campo "cliente" não pode estar vazio.');
-    }
-
-    if (empty($year)) {
-        die('O campo "ano" não pode estar vazio.');
-    }
-
-    if (empty($type)) {
-        die('O campo "tipo" não pode estar vazio.');
-    }
-
-    // Verifica se os valores dos filtros são válidos
-    if (!is_numeric($client)) {
-        die('O campo "cliente" deve ser um número.');
-    }
-
-    if (!is_numeric($year)) {
-        die('O campo "ano" deve ser um número.');
-    }
-
-    // Filtra os itens do portfólio
-    $query_args = [
-        'posts_per_page' => -1,
-        'meta_query' => [
-            'relation' => 'AND',
-            ['key' => 'client', 'value' => $client, 'compare' => ($client === 'All' ? '!=' : '=')],
-            ['key' => 'year', 'value' => $year, 'compare' => ($year === 'All' ? '!=' : '=')],
-            ['key' => 'type', 'value' => $type, 'compare' => ($type === 'All' ? '!=' : '=')],
-        ],
-    ];
-
-    $portfolio_query = new WP_Query($query_args);
-
-    $output = [];
-
-    if ($portfolio_query->have_posts()) {
-        while ($portfolio_query->have_posts()) {
-            $portfolio_query->the_post();
-
-            $tags_classes = array_map(function($tag) {
-                return 'elementor-filter-' . $tag->term_id;
-            }, get_the_tags());
-
-            $classes = [
-                'elementor-portfolio-item',
-                'elementor-post',
-                implode(' ', $tags_classes),
-            ];
-
-            $output[] = [
-                'post_title' => get_the_title(),
-                'post_content' => get_the_content(),
-                'post_classes' => $classes,
-                'post_permalink' => get_permalink(),
-            ];
+        if ( isset( $filters['client'] ) && ! empty( $filters['custom_field_name'] ) ) {
+            $query->set( 'meta_key', 'client' );
+            $query->set( 'meta_value', $filters['Moche'] );
         }
-        wp_reset_postdata();
     }
 
-    // Exibe os itens do portfólio filtrados
-    echo json_encode($output);
-    wp_die();
-}
-
-add_action('wp_ajax_filter_portfolio', 'filter_portfolio');
-add_action('wp_ajax_nopriv_filter_portfolio', 'filter_portfolio');
-
+    return $query;
+} );

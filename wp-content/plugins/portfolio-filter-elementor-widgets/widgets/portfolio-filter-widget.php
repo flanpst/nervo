@@ -714,7 +714,18 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 		$this->type = $type;
 	}
 
-	// Renderização do widget
+	function result_filter($query_args) {
+		print_r($query_args);
+		// Cria a consulta personalizada
+		$query = new WP_Query($query_args);
+	
+		// Obtém os resultados da consulta
+		$posts = $query->get_posts();
+	
+		// Retorna os resultados da consulta
+		return $posts;
+	}
+
 	// Renderização do widget
 	public function render()
 	{
@@ -828,16 +839,53 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 	{
 		$filters = [];
 
-		// Obtemos todos os campos customizados do post atual
-		$fields = get_post_meta(get_the_ID());
+		// Obtemos os valores dos campos de filtro
+		$client = $this->get_settings('client');
+		$year = $this->get_settings('year');
+		$type = $this->get_settings('type');
 
-		// Iteramos sobre os campos customizados e adicionamos os valores aos filtros
-		foreach ($fields as $name => $value) {
-			$filters[$name] = $value;
+		// Adicionamos os valores dos filtros ao array $filters
+		if ($client) {
+			$filters['client'] = $client;
+		}
+
+		if ($year) {
+			$filters['year'] = $year;
+		}
+
+		if ($type) {
+			$filters['type'] = $type;
 		}
 
 		return $filters;
 	}
+
+	// Função para aplicar os filtros aos itens do portfólio
+	protected function apply_filters($items)
+	{
+		$filters = $this->get_filters();
+		// Filtramos os itens do portfólio com base nos valores dos filtros
+		if ($filters['client']) {
+			$items = array_filter($items, function ($item) use ($filters) {
+				return $item->post_meta['client'] === $filters['client'];
+			});
+		}
+
+		if ($filters['year']) {
+			$items = array_filter($items, function ($item) use ($filters) {
+				return $item->post_date >= $filters['year'] . '-01-01' && $item->post_date <= $filters['year'] . '-12-31';
+			});
+		}
+
+		if ($filters['type']) {
+			$items = array_filter($items, function ($item) use ($filters) {
+				return has_term($filters['type'], 'type', $item->ID);
+			});
+		}
+
+		return $items;
+	}
+
 
 	// Registre os campos do widget
 	// Registre os campos do widget
@@ -1030,7 +1078,7 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 		<div class="elementor-portfolio-filter">
 
 			<label for="client">Client:</label>
-			<select id="client" name="client">
+			<select id="client" name="client" onchange="handleChange()">
 				<?php
 				$clients = $this->get_clients_list();
 				foreach ($clients as $client) {
@@ -1040,7 +1088,7 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 			</select>
 
 			<label for="year">Year:</label>
-			<select id="year" name="year">
+			<select id="year" name="year" onchange="handleChange()">
 				<?php
 				$years = $this->get_years_list();
 				foreach ($years as $year) {
@@ -1050,7 +1098,7 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 			</select>
 
 			<label for="type">Type:</label>
-			<select id="type" name="type">
+			<select id="type" name="type" onchange="handleChange()">
 				<?php
 				$types = $this->get_types_list(); // Substitua pelo código que obtém a lista de tipos
 				foreach ($types as $type) {

@@ -1,37 +1,32 @@
-// Função que obtém os dados dos filtros
-function getFilters() {
-    // Obtemos o valor do campo cliente
-    const client = document.querySelector('select[id="filters"]').value;
+function handleChange() {
+    // Obtém os valores dos seletores
+    const clientValue = document.querySelector('#client').value;
+    const yearValue = document.querySelector('#year').value;
+    const typeValue = document.querySelector('#type').value;
 
-    // Obtemos o valor do campo ano
-    const year = document.querySelector('input[name="year"]').value;
+    // Faz a requisição AJAX para filtrar os itens do portfólio
+    jQuery.ajax({
+        url: ajax_object.ajax_url,
+        type: 'POST',
+        data: {
+            'action': 'my_portfolio_query_filter',
+            'client': clientValue,
+            'year': yearValue,
+            'type': typeValue,
+        },
+        success: function(response) {
+            // Manipula a resposta da requisição
+            console.log(response);
 
-    // Obtemos o valor do campo tipo
-    const type = document.querySelector('select[id="type"]').value;
-
-    // Criamos o objeto de filtros
-    const filters = {
-        client,
-        year,
-        type,
-    };
-
-    // Retornamos o objeto de filtros
-    return filters;
+            // Renderiza os itens do portfólio filtrados
+            const newQueryArgs = {
+                'post__in': response.posts,
+            };
+        },
+        error: function(error) {
+            // Trata erros, se houver
+            console.error(error);
+        }
+    });
 }
 
-// Função que envia os dados para o widget
-function sendFilters() {
-    // Obtemos os dados dos filtros
-    const filters = getFilters();
-
-    // Enviamos os dados para o widget
-    const widget = window.elementor.getWidgetById('portfolio-filter');
-    widget.updateSettings(filters);
-}
-
-// Atribuimos os eventos aos campos
-$(function() {
-    // Atribuimos o evento de change ao campo cliente
-    $('#filters').on('change', sendFilters);
-});
