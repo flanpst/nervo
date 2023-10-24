@@ -118,3 +118,81 @@ add_action( 'elementor/query/portfolio', function( $query ) {
 
     return $query;
 } );
+
+function my_portfolio_query_filter_function() {
+    $client = isset($_POST['client']) ? sanitize_text_field($_POST['client']) : '';
+    $year = isset($_POST['year']) ? sanitize_text_field($_POST['year']) : '';
+    $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
+
+    $meta_query = array('relation' => 'AND');
+
+    if (!empty($client) && $client !== 'All') {
+        $meta_query[] = array(
+            'key' => 'client',
+            'value' => $client,
+            'compare' => '='
+        );
+    }
+    if (!empty($year) && $year !== 'All') {
+        $meta_query[] = array(
+            'key' => 'year',
+            'value' => $year,
+            'compare' => '='
+        );
+    }
+    if (!empty($type) && $type !== 'All') {
+        $meta_query[] = array(
+            'key' => 'type',
+            'value' => $type,
+            'compare' => '='
+        );
+    }
+
+    $args = array(
+        'post_type' => 'post',
+        'meta_query' => $meta_query
+    );
+
+    $query = new WP_Query($args);
+
+    if ($query->have_posts()) {
+        $posts = array();
+        $unique_clients = array();
+        $unique_years = array();
+        $unique_types = array();
+
+        while ($query->have_posts()) {
+            $query->the_post();
+            $posts[] = get_the_ID();
+
+            $client = get_post_meta(get_the_ID(), 'client', true);
+            $year = get_post_meta(get_the_ID(), 'year', true);
+            $type = get_post_meta(get_the_ID(), 'type', true);
+
+            if ($client && !in_array($client, $unique_clients)) {
+                $unique_clients[] = $client;
+            }
+            if ($year && !in_array($year, $unique_years)) {
+                $unique_years[] = $year;
+            }
+            if ($type && !in_array($type, $unique_types)) {
+                $unique_types[] = $type;
+            }
+        }
+
+        wp_send_json_success(array(
+            'posts' => $posts,
+            'clients' => $unique_clients,
+            'years' => $unique_years,
+            'types' => $unique_types,
+        ));
+    } else {
+        wp_send_json_error('Nenhum post encontrado', 404);
+    }
+    wp_die();
+}
+
+add_action('wp_ajax_my_portfolio_query_filter', 'my_portfolio_query_filter_function');
+add_action('wp_ajax_nopriv_my_portfolio_query_filter', 'my_portfolio_query_filter_function');
+
+

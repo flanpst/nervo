@@ -1106,6 +1106,7 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 				}
 				?>
 			</select>
+			<button id="clearFilters">Limpar Filtros</button>
 		</div>
 		<div class="elementor-portfolio elementor-grid elementor-posts-container">
 		<?php
