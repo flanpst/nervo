@@ -29,6 +29,10 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 	private $year = 'All';
 	private $type = 'All';
 
+	private $client_filter = 'All';
+    private $year_filter = 'All';
+    private $type_filter = 'All';
+
 	public function set_client($client)
 	{
 		$this->client = $client;
@@ -695,15 +699,49 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 		}
 	}
 
-	public function query_posts()
+	public function query_posts($filters)
 	{
+		$meta_query_args = $this->prepare_meta_query_args($filters);
+
 		$query_args = [
 			'posts_per_page' => $this->get_settings('posts_per_page'),
+			'meta_query' => $meta_query_args
 		];
 
 		/** @var Module_Query $elementor_query */
 		$elementor_query = Module_Query::instance();
 		$this->_query = $elementor_query->get_query($this, 'posts', $query_args, []);
+
+	}
+
+	public function prepare_meta_query_args($filters) {
+		$meta_query_args = [];
+	
+		if ($filters['client'] !== 'All') {
+			$meta_query_args[] = [
+				'key' => 'client',
+				'value' => $filters['client'],
+				'compare' => '='
+			];
+		}
+	
+		if ($filters['year'] !== 'All') {
+			$meta_query_args[] = [
+				'key' => 'year',
+				'value' => $filters['year'],
+				'compare' => '='
+			];
+		}
+	
+		if ($filters['type'] !== 'All') {
+			$meta_query_args[] = [
+				'key' => 'type',
+				'value' => $filters['type'],
+				'compare' => '='
+			];
+		}
+	
+		return $meta_query_args;
 	}
 
 
@@ -715,212 +753,56 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 	}
 
 	function result_filter($query_args) {
-		print_r($query_args);
-		// Cria a consulta personalizada
 		$query = new WP_Query($query_args);
 	
-		// Obtém os resultados da consulta
 		$posts = $query->get_posts();
 	
-		// Retorna os resultados da consulta
 		return $posts;
 	}
 
 	// Renderização do widget
 	public function render()
 	{
-		// Executa a consulta para os itens do portfólio
-		$this->query_posts();
-
-		// Obtemos o objeto WP_Query com os resultados da consulta
-		$wp_query = $this->get_query();
-
-		// Se não houver resultados, retornamos
-		if (!$wp_query->found_posts) {
-			return;
-		}
-
-		// Obtemos as tags dos itens do portfólio
-		$this->get_posts_tags();
-
-		// Renderizamos o cabeçalho do loop de itens do portfólio
-		$this->render_loop_header();
-
-		// Iteramos sobre os itens do portfólio e renderizamos cada item
-		while ($wp_query->have_posts()) {
-			$wp_query->the_post();
-			$this->render_post();
-		}
-
-		// Renderizamos o rodapé do loop de itens do portfólio
-		$this->render_loop_footer();
-
-		// Limpamos os dados da consulta
-		wp_reset_postdata();
-	}
-
-	// Renderização do portfólio filtrado
-	public function render_filtered($filters)
-	{
-		// Executa a consulta para os itens do portfólio, filtrando pelos dados recebidos
+		$filters = [
+			'client' => $this->client_filter,
+			'year' => $this->year_filter,
+			'type' => $this->type_filter,
+		];
+	
 		$this->query_posts($filters);
-
-		// Obtemos o objeto WP_Query com os resultados da consulta
+	
 		$wp_query = $this->get_query();
-
-		// Se não houver resultados, retornamos
+		error_log(print_r($wp_query->request, true));
+	
 		if (!$wp_query->found_posts) {
 			return;
 		}
-
-		// Obtemos as tags dos itens do portfólio
+	
 		$this->get_posts_tags();
-
-		// Renderizamos o cabeçalho do loop de itens do portfólio
+	
 		$this->render_loop_header();
-
-		// Iteramos sobre os itens do portfólio e renderizamos cada item
+	
 		while ($wp_query->have_posts()) {
 			$wp_query->the_post();
 			$this->render_post();
 		}
-
-		// Renderizamos o rodapé do loop de itens do portfólio
+	
 		$this->render_loop_footer();
-
-		// Limpamos os dados da consulta
+	
 		wp_reset_postdata();
 	}
 
-	protected function filter_items($query)
-	{
-		// Obtemos os filtros
-		$filters = $this->get_filters();
+	public function set_filters($client, $year, $type) {
+		$this->client_filter = $client;
+		$this->year_filter = $year;
+		$this->type_filter = $type;
 
-		// Iteramos sobre os filtros e aplicamos as condições de filtro ao query
-		foreach ($filters as $name => $value) {
-			switch ($name) {
-				case 'client':
-					$query->where('client', $value);
-					break;
-
-				case 'year':
-					$query->where('year', $value);
-					break;
-
-				case 'type':
-					$query->where('type', $value);
-					break;
-			}
-		}
-
-		return $query;
-	}
-
-	protected function get_portfolio_items()
-	{
-		// Obtemos os filtros
-		$filters = $this->get_filters();
-
-		// Filtramos os itens do portfólio
-		$query = new WP_Query([
-			'post_type' => 'portfolio',
-			'post_status' => 'publish',
-		]);
-
-		// Aplicamos os filtros
-		$query = $this->filter_items($query);
-
-		// Retornamos os itens
-		return $query->get_posts();
-	}
-
-	protected function get_filters()
-	{
-		$filters = [];
-
-		// Obtemos os valores dos campos de filtro
-		$client = $this->get_settings('client');
-		$year = $this->get_settings('year');
-		$type = $this->get_settings('type');
-
-		// Adicionamos os valores dos filtros ao array $filters
-		if ($client) {
-			$filters['client'] = $client;
-		}
-
-		if ($year) {
-			$filters['year'] = $year;
-		}
-
-		if ($type) {
-			$filters['type'] = $type;
-		}
-
-		return $filters;
-	}
-
-	// Função para aplicar os filtros aos itens do portfólio
-	protected function apply_filters($items)
-	{
-		$filters = $this->get_filters();
-		// Filtramos os itens do portfólio com base nos valores dos filtros
-		if ($filters['client']) {
-			$items = array_filter($items, function ($item) use ($filters) {
-				return $item->post_meta['client'] === $filters['client'];
-			});
-		}
-
-		if ($filters['year']) {
-			$items = array_filter($items, function ($item) use ($filters) {
-				return $item->post_date >= $filters['year'] . '-01-01' && $item->post_date <= $filters['year'] . '-12-31';
-			});
-		}
-
-		if ($filters['type']) {
-			$items = array_filter($items, function ($item) use ($filters) {
-				return has_term($filters['type'], 'type', $item->ID);
-			});
-		}
-
-		return $items;
+		$this->render();
 	}
 
 
-	// Registre os campos do widget
-	// Registre os campos do widget
-	protected function register_fields() {
-		$this->start_controls_section('section_filters', [
-			'label' => esc_html__('Filtros'),
-		]);
 
-		$this->add_control('client', [
-			'label' => esc_html__('Cliente'),
-			'type' => Controls_Manager::SELECT,
-			'options' => ['' => esc_html__('Todos')] + get_terms('client'),
-		]);
-
-		$this->add_control('year', [
-			'label' => esc_html__('Ano'),
-			'type' => Controls_Manager::NUMBER,
-		]);
-
-		$this->add_control('type', [
-			'label' => esc_html__('Tipo'),
-			'type' => Controls_Manager::SELECT,
-			'options' => ['' => esc_html__('Todos')] + get_terms('type'),
-		]);
-
-		$this->add_control('search', [
-			'label' => esc_html__('Pesquisa'),
-			'type' => Controls_Manager::TEXT,
-			'placeholder' => esc_html__('Digite uma palavra-chave'),
-		]);
-
-		$this->end_controls_section();
-	}
-
-	protected function render_thumbnail()
+	public function render_thumbnail()
 	{
 		$settings = $this->get_settings();
 
@@ -966,7 +848,7 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 	<?php
 	}
 
-	protected function render_title()
+	public function render_title()
 	{
 		if (!$this->get_settings('show_title')) {
 			return;
@@ -979,8 +861,9 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 		</<?php Utils::print_validated_html_tag($tag); ?>>
 	<?php
 	}
+	
 
-	protected function render_client()
+	public function render_client()
 	{
 
 		if (!$this->get_settings('show_client')) {
@@ -1106,9 +989,9 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 				}
 				?>
 			</select>
-			<button id="clearFilters">Limpar Filtros</button>
+			<button id="clearFilters">Clear</button>
 		</div>
-		<div class="elementor-portfolio elementor-grid elementor-posts-container">
+		<div id="portfolio-container" class="elementor-portfolio elementor-grid elementor-posts-container">
 		<?php
 		}
 
@@ -1140,4 +1023,10 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 		{
 			return 'posts';
 		}
+	}
+
+	function render_custom_widget($widget) 
+	{
+		$widget_obj = $widget['widgetObj'];
+		echo $widget_obj->render_content();
 	}

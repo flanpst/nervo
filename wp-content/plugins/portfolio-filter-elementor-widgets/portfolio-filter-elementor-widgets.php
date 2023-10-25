@@ -1,5 +1,7 @@
 <?php
 
+
+
 /**
  * Plugin Name: Portfolio Filter Nervo Widget
  * Description: Portfolio display with filtering system for results
@@ -65,9 +67,10 @@ function load_portfolio_posts() {
         while ($portfolio_query->have_posts()) {
             $portfolio_query->the_post();
 
-            $tags_classes = array_map(function($tag) {
+            $tags = get_the_tags();
+            $tags_classes = $tags ? array_map(function($tag) {
                 return 'elementor-filter-' . $tag->term_id;
-            }, get_the_tags());
+            }, $tags) : [];
 
             $classes = [
                 'elementor-portfolio-item',
@@ -102,12 +105,8 @@ function enqueue_custom_script() {
 add_action('wp_enqueue_scripts', 'enqueue_custom_script');
 
 
-// Adiciona um hook para filtrar o widget de portfólio do Elementor
 add_action( 'elementor/query/portfolio', function( $query ) {
-    // Verifique se a consulta Elementor está ativa
     if ( function_exists( 'elementor' ) ) {
-        // Adicione seus filtros à consulta
-        // Por exemplo, se você quer filtrar por um campo personalizado chamado 'custom_field_name'
         $filters = $_POST['filters']; // Certifique-se de validar e limpar os dados
 
         if ( isset( $filters['client'] ) && ! empty( $filters['custom_field_name'] ) ) {
@@ -161,6 +160,8 @@ function my_portfolio_query_filter_function() {
         $unique_years = array();
         $unique_types = array();
 
+        ob_start();
+
         while ($query->have_posts()) {
             $query->the_post();
             $posts[] = get_the_ID();
@@ -178,10 +179,25 @@ function my_portfolio_query_filter_function() {
             if ($type && !in_array($type, $unique_types)) {
                 $unique_types[] = $type;
             }
+            ?>
+            <div class="portfolio-item">
+                <h3><?php the_title(); ?></h3>
+                <div class="portfolio-meta">
+                    <span class="client"><?php echo get_post_meta(get_the_ID(), 'client', true); ?></span>
+                    <span class="year"><?php echo get_post_meta(get_the_ID(), 'year', true); ?></span>
+                    <span class="type"><?php echo get_post_meta(get_the_ID(), 'type', true); ?></span>
+                </div>
+                <div class="portfolio-content">
+                    <?php the_content(); ?>
+                </div>
+            </div>
+            <?php
         }
 
+        $html_output = ob_get_clean();
+
         wp_send_json_success(array(
-            'posts' => $posts,
+            'html' => $html_output,
             'clients' => $unique_clients,
             'years' => $unique_years,
             'types' => $unique_types,
@@ -194,5 +210,3 @@ function my_portfolio_query_filter_function() {
 
 add_action('wp_ajax_my_portfolio_query_filter', 'my_portfolio_query_filter_function');
 add_action('wp_ajax_nopriv_my_portfolio_query_filter', 'my_portfolio_query_filter_function');
-
-
