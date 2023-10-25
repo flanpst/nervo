@@ -45,17 +45,17 @@ add_action( 'elementor/frontend/after_enqueue_styles', 'register_widget_filter_s
 
 
 function load_portfolio_posts() {
-    $client = isset($_POST['client']) ? sanitize_text_field($_POST['client']) : 'All';
-    $year = isset($_POST['year']) ? sanitize_text_field($_POST['year']) : 'All';
-    $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : 'All';
+    $client = isset($_POST['client']) ? sanitize_text_field($_POST['client']) : 'Cliente';
+    $year = isset($_POST['year']) ? sanitize_text_field($_POST['year']) : 'Ano';
+    $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : 'Tipo de Projecto';
 
     $query_args = [
         'posts_per_page' => -1,
         'meta_query' => [
             'relation' => 'AND',
-            ['key' => 'client', 'value' => $client, 'compare' => ($client === 'All' ? '!=' : '=')],
-            ['key' => 'year', 'value' => $year, 'compare' => ($year === 'All' ? '!=' : '=')],
-            ['key' => 'type', 'value' => $type, 'compare' => ($type === 'All' ? '!=' : '=')],
+            ['key' => 'client', 'value' => $client, 'compare' => ($client === 'Cliente' ? '!=' : '=')],
+            ['key' => 'year', 'value' => $year, 'compare' => ($year === 'Ano' ? '!=' : '=')],
+            ['key' => 'type', 'value' => $type, 'compare' => ($type === 'Tipo de Projecto' ? '!=' : '=')],
         ],
     ];
 
@@ -125,21 +125,21 @@ function my_portfolio_query_filter_function() {
 
     $meta_query = array('relation' => 'AND');
 
-    if (!empty($client) && $client !== 'All') {
+    if (!empty($client) && $client !== 'Cliente') {
         $meta_query[] = array(
             'key' => 'client',
             'value' => $client,
             'compare' => '='
         );
     }
-    if (!empty($year) && $year !== 'All') {
+    if (!empty($year) && $year !== 'Ano') {
         $meta_query[] = array(
             'key' => 'year',
             'value' => $year,
             'compare' => '='
         );
     }
-    if (!empty($type) && $type !== 'All') {
+    if (!empty($type) && $type !== 'Tipo de Projecto') {
         $meta_query[] = array(
             'key' => 'type',
             'value' => $type,
@@ -180,17 +180,17 @@ function my_portfolio_query_filter_function() {
                 $unique_types[] = $type;
             }
             ?>
-            <div class="portfolio-item">
-                <h3><?php the_title(); ?></h3>
-                <div class="portfolio-meta">
-                    <span class="client"><?php echo get_post_meta(get_the_ID(), 'client', true); ?></span>
-                    <span class="year"><?php echo get_post_meta(get_the_ID(), 'year', true); ?></span>
-                    <span class="type"><?php echo get_post_meta(get_the_ID(), 'type', true); ?></span>
-                </div>
-                <div class="portfolio-content">
-                    <?php the_content(); ?>
-                </div>
-            </div>
+            <article class="elementor-portfolio-item elementor-post post-<?php the_ID(); ?> post type-post status-publish format-standard has-post-thumbnail hentry entry">
+                <a class="elementor-post__thumbnail__link" href="<?php the_permalink(); ?>">
+                    <div class="elementor-portfolio-item__img elementor-post__thumbnail">
+                        <?php the_post_thumbnail( 'medium-large', array( 'class' => 'attachment-medium_large size-medium_large wp-image-' . get_post_thumbnail_id(), 'style' => 'width:100%;height:100%;max-width:1068px' ) ); ?>
+                    </div>
+                    <div class="elementor-portfolio-item__overlay">
+                        <h3 class="elementor-portfolio-item__title"><?php the_title(); ?></h3>
+                        <span class="elementor-portfolio-item__client"><?php echo get_post_meta(get_the_ID(), 'client', true); ?></span>
+                    </div>
+                </a>
+            </article>
             <?php
         }
 

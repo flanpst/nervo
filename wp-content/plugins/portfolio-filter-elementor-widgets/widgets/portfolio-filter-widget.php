@@ -24,14 +24,9 @@ if (!defined('ABSPATH')) {
  */
 class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 {
-
-	private $client = 'All';
-	private $year = 'All';
-	private $type = 'All';
-
-	private $client_filter = 'All';
-    private $year_filter = 'All';
-    private $type_filter = 'All';
+	private $client_filter = 'Cliente';
+    private $year_filter = 'Ano';
+    private $type_filter = 'Tipo de Projecto';
 
 	public function set_client($client)
 	{
@@ -125,7 +120,7 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 
 	function get_clients_list()
 	{
-		$options = ['All'];
+		$options = ['Cliente'];
 
 		$meta_query = [
 			'relation' => 'AND',
@@ -157,7 +152,7 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 
 	function get_years_list()
 	{
-		$options = ['All'];
+		$options = ['Ano'];
 
 		$meta_query = [
 			'relation' => 'AND',
@@ -188,7 +183,7 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 
 	function get_types_list()
 	{
-		$options = ['All'];
+		$options = ['Tipo de Projecto'];
 
 		$meta_query = [
 			'relation' => 'AND',
@@ -717,7 +712,7 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 	public function prepare_meta_query_args($filters) {
 		$meta_query_args = [];
 	
-		if ($filters['client'] !== 'All') {
+		if ($filters['client'] !== 'Cliente') {
 			$meta_query_args[] = [
 				'key' => 'client',
 				'value' => $filters['client'],
@@ -725,7 +720,7 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 			];
 		}
 	
-		if ($filters['year'] !== 'All') {
+		if ($filters['year'] !== 'Ano') {
 			$meta_query_args[] = [
 				'key' => 'year',
 				'value' => $filters['year'],
@@ -733,7 +728,7 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 			];
 		}
 	
-		if ($filters['type'] !== 'All') {
+		if ($filters['type'] !== 'Tipo de Projecto') {
 			$meta_query_args[] = [
 				'key' => 'type',
 				'value' => $filters['type'],
@@ -949,51 +944,82 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 	<?php
 		}
 
-		protected function render_loop_header()
-		{
+		protected function render_loop_header() {
 			if ($this->get_settings('show_filter_bar')) {
 				$this->render_filter_menu();
 			}
-	?>
-		<?php
 			$clients = $this->get_clients_list();
-		?>
-		<div class="elementor-portfolio-filter">
-
-			<label for="client">Client:</label>
-			<select id="client" name="client" onchange="handleChange()">
-				<?php
-				$clients = $this->get_clients_list();
-				foreach ($clients as $client) {
-					echo "<option value='$client'>$client</option>";
-				}
-				?>
-			</select>
-
-			<label for="year">Year:</label>
-			<select id="year" name="year" onchange="handleChange()">
-				<?php
-				$years = $this->get_years_list();
-				foreach ($years as $year) {
-					echo "<option value='$year'>$year</option>";
-				}
-				?>
-			</select>
-
-			<label for="type">Type:</label>
-			<select id="type" name="type" onchange="handleChange()">
-				<?php
-				$types = $this->get_types_list(); // Substitua pelo código que obtém a lista de tipos
-				foreach ($types as $type) {
-					echo "<option value='$type'>$type</option>";
-				}
-				?>
-			</select>
-			<button id="clearFilters">Clear</button>
-		</div>
-		<div id="portfolio-container" class="elementor-portfolio elementor-grid elementor-posts-container">
-		<?php
-		}
+			?>
+			<section class="elementor-section elementor-top-section elementor-element elementor-element-8dc766a elementor-section-boxed elementor-section-height-default elementor-section-height-default">
+				<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-9b1251b">
+						<div class="elementor-widget-wrap elementor-element-populated">
+							<div class="elementor-element elementor-element-96a8779 elementor-button-align-stretch elementor-widget elementor-widget-form">
+								<div class="elementor-widget-container">
+									<form class="elementor-form" method="post" name="New Form">
+										<div class="elementor-form-fields-wrapper elementor-labels-above">
+											<div class="elementor-field-type-select elementor-field-group elementor-column elementor-col-25">
+												<div class="elementor-field elementor-select-wrapper remove-before ">
+													<div class="select-caret-down-wrapper">
+														<i aria-hidden="true" class="eicon-caret-down"></i>
+													</div>
+													<select name="form_fields[name]" id="client" class="elementor-field-textual elementor-size-sm" onchange="handleChange()">
+														<?php
+														foreach ($clients as $client) {
+															echo "<option value='$client'>$client</option>";
+														}
+														?>
+													</select>
+												</div>
+											</div>
+											<div class="elementor-field-type-select elementor-field-group elementor-column elementor-col-25">
+												<div class="elementor-field elementor-select-wrapper remove-before ">
+													<div class="select-caret-down-wrapper">
+														<i aria-hidden="true" class="eicon-caret-down"></i>
+													</div>
+													<select name="form_fields[type]" id="type" class="elementor-field-textual elementor-size-sm" onchange="handleChange()">
+														<?php
+														$types = $this->get_types_list();
+														foreach ($types as $type) {
+															echo "<option value='$type'>$type</option>";
+														}
+														?>
+													</select>
+												</div>
+											</div>
+											<div class="elementor-field-type-select elementor-field-group elementor-column elementor-col-25">
+												<div class="elementor-field elementor-select-wrapper remove-before ">
+													<div class="select-caret-down-wrapper">
+														<i aria-hidden="true" class="eicon-caret-down"></i>
+													</div>
+													<select name="form_fields[year]" id="year" class="elementor-field-textual elementor-size-sm" onchange="handleChange()">
+														<?php
+														$years = $this->get_years_list();
+														foreach ($years as $year) {
+															echo "<option value='$year'>$year</option>";
+														}
+														?>
+													</select>
+												</div>
+											</div>
+											<div class="elementor-field-group elementor-column elementor-field-type-submit elementor-col-25 e-form__buttons">
+												<button id="clearFilters" class="elementor-button elementor-size-sm">
+													<span>
+														<span class="elementor-button-text">Limpar</span>
+													</span>
+												</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<div id="portfolio-container" class="elementor-portfolio elementor-grid elementor-posts-container">
+			<?php
+		}		
 
 		protected function render_loop_footer()
 		{
@@ -1001,7 +1027,6 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 		</div>
 <?php
 		}
-
 
 		public function render_post()
 		{

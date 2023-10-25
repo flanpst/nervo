@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const clearFiltersBtn = document.querySelector('#clearFilters');
     clearFiltersBtn.addEventListener('click', function() {
         shouldUpdateFields = false; 
-        handleChange('All', 'All', 'All', true);
+        handleChange('Cliente', 'Tipo de Projecto', 'Ano', true);
         shouldUpdateFields = true;
     });
 
@@ -15,24 +15,39 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 });
 
-function updateSelectOptions(selectElement, values, defaultValue = 'All') {
+function updateSelectOptions(selectElement, values, defaultValue) {
+    // Limpa todas as opções existentes
     selectElement.innerHTML = '';
-    
-    const allOption = document.createElement('option');
-    allOption.value = 'All';
-    allOption.text = 'All';
-    selectElement.add(allOption);
 
+    // Cria e adiciona a opção padrão
+    const defaultOption = document.createElement('option');
+    defaultOption.value = defaultValue;
+    defaultOption.text = defaultValue;
+    selectElement.add(defaultOption);
+
+    // Adiciona as outras opções
     values.forEach(value => {
-        const option = document.createElement('option');
-        option.value = value;
-        option.text = value;
-        if (value === defaultValue) {
-            option.selected = true;
+        // Verifica se a opção já existe
+        let optionExists = false;
+        for (let i = 0; i < selectElement.options.length; i++) {
+            if (selectElement.options[i].value === value) {
+                optionExists = true;
+                break;
+            }
         }
-        selectElement.add(option);
+
+        // Se a opção não existir, cria e adiciona a nova opção
+        if (!optionExists) {
+            const option = document.createElement('option');
+            option.value = value;
+            option.text = value;
+            selectElement.add(option);
+        }
     });
 }
+
+
+
 
 function handleChange(clientValue = null, yearValue = null, typeValue = null, reset = false) {
     
