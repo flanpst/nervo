@@ -118,98 +118,61 @@ class Elementor_Custom_Portfolio_Filter_Widget extends Base_Widget
 
 
 
-	function get_clients_list()
-	{
-		$options = ['Cliente'];
-
-		$meta_query = [
-			'relation' => 'AND',
-			[
-				'key' => 'client',
-				'compare' => 'EXISTS'
-			]
-		];
-
-		$clients = get_posts([
-			'post_type' => 'post',
-			'meta_query' => $meta_query
-		]);
-
-		$last_value = null;
-
-		foreach ($clients as $client) {
-			$value = get_post_meta($client->ID, 'client', true);
-
-			if ($value !== $last_value) {
-				$options[$client->ID] = $value;
-				$last_value = $value;
-			}
-		}
-
-		return $options;
+	function get_clients_list() {
+		global $wpdb;
+	
+		$query = "
+			SELECT DISTINCT meta_value 
+			FROM $wpdb->postmeta 
+			WHERE meta_key = 'client' 
+			AND meta_value != '' 
+			ORDER BY meta_value ASC
+		";
+	
+		$results = $wpdb->get_col($query);
+	
+		array_unshift($results, 'Cliente');
+	
+		return $results;
 	}
 
 
 	function get_years_list()
 	{
-		$options = ['Ano'];
-
-		$meta_query = [
-			'relation' => 'AND',
-			[
-				'key' => 'year',
-				'compare' => 'EXISTS'
-			]
-		];
-
-		$clients = get_posts([
-			'post_type' => 'post',
-			'meta_query' => $meta_query
-		]);
-
-		$last_value = null;
-
-		foreach ($clients as $client) {
-			$value = get_post_meta($client->ID, 'year', true);
-
-			if ($value !== $last_value) {
-				$options[$client->ID] = $value;
-				$last_value = $value;
-			}
-		}
-
-		return $options;
+		global $wpdb;
+	
+		$query = "
+			SELECT DISTINCT meta_value 
+			FROM $wpdb->postmeta 
+			WHERE meta_key = 'year' 
+			AND meta_value != '' 
+			ORDER BY meta_value ASC
+		";
+	
+		$results = $wpdb->get_col($query);
+	
+		array_unshift($results, 'Ano');
+	
+		return $results;
 	}
 
 	function get_types_list()
 	{
-		$options = ['Tipo de Projecto'];
-
-		$meta_query = [
-			'relation' => 'AND',
-			[
-				'key' => 'type',
-				'compare' => 'EXISTS'
-			]
-		];
-
-		$clients = get_posts([
-			'post_type' => 'post',
-			'meta_query' => $meta_query
-		]);
-
-		$last_value = null;
-
-		foreach ($clients as $client) {
-			$value = get_post_meta($client->ID, 'type', true);
-
-			if ($value !== $last_value) {
-				$options[$client->ID] = $value;
-				$last_value = $value;
-			}
-		}
-
-		return $options;
+		global $wpdb;
+	
+		$query = "
+			SELECT DISTINCT meta_value 
+			FROM $wpdb->postmeta 
+			WHERE meta_key = 'type' 
+			AND meta_value != '' 
+			ORDER BY meta_value ASC
+		";
+	
+		$results = $wpdb->get_col($query);
+	
+		array_unshift($results, 'Tipo de Projecto');
+	
+		return $results;
 	}
 
 	protected function register_controls()
